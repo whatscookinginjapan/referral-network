@@ -146,19 +146,14 @@ async function handleXOAuthLogin() {
 
     // Watch for the success redirect
     return new Promise((resolve) => {
-      const listener = (tabId, changeInfo, tabInfo) => {
-        if (tabId !== tab.id) return;
+      const checkUrl = (tabUrl) => {
+        if (!tabUrl || !tabUrl.includes("/api/auth/success?code=")) return;
 
-        const tabUrl = changeInfo.url || tabInfo?.url || "";
-        if (!tabUrl.includes("/api/auth/success?code=")) return;
-
-        // Extract exchange code from URL
         try {
           const urlObj = new URL(tabUrl);
           const exchangeCode = urlObj.searchParams.get("code");
           if (!exchangeCode) return;
 
-          // Exchange code for JWT token via secure POST
           fetch(`${API_BASE}/auth/exchange`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -168,7 +163,7 @@ async function handleXOAuthLogin() {
           .then(data => {
             if (data.token) {
               chrome.storage.local.set({ authToken: data.token }, () => {
-                chrome.tabs.remove(tabId);
+                chrome.tabs.remove(tab.id).catch(() => {});
                 chrome.tabs.onUpdated.removeListener(listener);
                 resolve({ success: true, token: data.token });
               });
@@ -184,6 +179,21 @@ async function handleXOAuthLogin() {
         } catch (e) {
           // URL parsing failed
         }
+      };
+
+      const listener = (tabId, changeInfo, tabInfo) => {
+        if (tabId !== tab.id) return;
+
+        // Check URL from changeInfo (navigation) or query tab directly when complete
+        const tabUrl = changeInfo.url || "";
+        if (tabUrl) { checkUrl(tabUrl); return; }
+
+        if (changeInfo.status === "complete") {
+          chrome.tabs.get(tabId, (t) => {
+            if (t && t.url) checkUrl(t.url);
+          });
+        }
+
       };
 
       chrome.tabs.onUpdated.addListener(listener);
