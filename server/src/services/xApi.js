@@ -1,11 +1,9 @@
 const crypto = require('crypto');
+const { getDb } = require('../db/database');
 
 const X_CLIENT_ID = process.env.X_CLIENT_ID;
 const X_CLIENT_SECRET = process.env.X_CLIENT_SECRET;
 const CALLBACK_URL = process.env.X_CALLBACK_URL || 'http://localhost:3000/api/auth/callback';
-
-// In-memory store for PKCE code verifiers (keyed by state)
-const pendingAuth = new Map();
 
 function generateCodeVerifier() {
   return crypto.randomBytes(32).toString('base64url');
@@ -22,23 +20,15 @@ function generateState() {
 /**
  * Build the X OAuth 2.0 authorization URL (PKCE flow)
  */
-function getAuthorizationUrl() {
+async function getAuthorizationUrl() {
   const state = generateState();
   const codeVerifier = generateCodeVerifier();
   const codeChallenge = generateCodeChallenge(codeVerifier);
 
-  // Store verifier for callback
-  pendingAuth.set(state, {
-    codeVerifier,
-    createdAt: Date.now()
-  });
-
-  // Clean up old entries (older than 10 minutes)
-  for (const [key, val] of pendingAuth.entries()) {
-    if (Date.now() - val.createdAt > 10 * 60 * 1000) {
-      pendingAuth.delete(key);
-    }
-  }
+  // Store verifier in database (survives server restarts)
+  const db = getDb();
+  await db.prepare('DELETE FROM oauth_states WHERE created_at < NOW() - INTERVAL \'10 minutes\'').run();
+  await db.prepare('INSERT INTO oauth_states (state, code_verifier) VALUES (?, ?)').run(state, codeVerifier);
 
   const params = new URLSearchParams({
     response_type: 'code',
@@ -60,13 +50,14 @@ function getAuthorizationUrl() {
  * Exchange authorization code for access token
  */
 async function exchangeCodeForToken(code, state) {
-  const pending = pendingAuth.get(state);
+  const db = getDb();
+  const pending = await db.prepare('SELECT code_verifier FROM oauth_states WHERE state = ?').get(state);
   if (!pending) {
     throw new Error('Invalid or expired state parameter');
   }
 
-  const { codeVerifier } = pending;
-  pendingAuth.delete(state);
+  const { code_verifier: codeVerifier } = pending;
+  await db.prepare('DELETE FROM oauth_states WHERE state = ?').run(state);
 
   const basicAuth = Buffer.from(`${X_CLIENT_ID}:${X_CLIENT_SECRET}`).toString('base64');
 

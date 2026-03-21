@@ -26,9 +26,9 @@ setInterval(() => {
 }, 30000);
 
 // GET /api/auth/x-login — returns the X OAuth authorization URL
-router.get('/x-login', (req, res) => {
+router.get('/x-login', async (req, res) => {
   try {
-    const { url, state } = xApi.getAuthorizationUrl();
+    const { url, state } = await xApi.getAuthorizationUrl();
     logAudit('login_attempt', { ip: getIp(req) });
     return res.json({ url, state });
   } catch (err) {

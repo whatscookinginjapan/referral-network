@@ -129,6 +129,12 @@ CREATE TABLE IF NOT EXISTS x_relationships (
 
 CREATE INDEX IF NOT EXISTS idx_x_relationships_user ON x_relationships(user_id);
 
+CREATE TABLE IF NOT EXISTS oauth_states (
+  state TEXT PRIMARY KEY,
+  code_verifier TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
 CREATE TABLE IF NOT EXISTS audit_logs (
   id SERIAL PRIMARY KEY,
   user_id TEXT,
