@@ -12,12 +12,16 @@ if (fs.existsSync(secureEnvPath)) {
 } else if (fs.existsSync(localEnvPath)) {
   require('dotenv').config({ path: localEnvPath });
   console.log('WARNING: Loading secrets from project .env (consider moving to ~/.config/referral-network/.env)');
-} else if (process.env.DATABASE_URL) {
-  // Railway or other cloud platform — env vars already set
-  console.log('Using environment variables from platform');
 } else {
-  console.error('ERROR: No .env file found and no DATABASE_URL set. Create a .env or set environment variables.');
-  process.exit(1);
+  // Log all available env var keys (not values) for debugging
+  const envKeys = Object.keys(process.env).sort();
+  console.log('Available env vars:', envKeys.join(', '));
+  if (process.env.DATABASE_URL) {
+    console.log('Using environment variables from platform');
+  } else {
+    console.error('ERROR: No .env file found and no DATABASE_URL set. Create a .env or set environment variables.');
+    process.exit(1);
+  }
 }
 
 const express = require('express');
