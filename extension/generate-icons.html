@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Generate Extension Icons</title>
+  <style>
+    body { font-family: -apple-system, sans-serif; padding: 40px; background: #1a1a1a; color: #fff; }
+    h1 { margin-bottom: 20px; }
+    .icons { display: flex; gap: 24px; align-items: flex-end; margin-bottom: 24px; }
+    .icon-group { text-align: center; }
+    .icon-group p { margin-top: 8px; color: #999; font-size: 13px; }
+    canvas { border: 1px solid #333; border-radius: 4px; }
+    button { padding: 12px 24px; background: #1DA1F2; color: #fff; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; margin-top: 16px; }
+    button:hover { background: #1a8cd8; }
+    .instructions { color: #999; margin-top: 24px; font-size: 14px; line-height: 1.6; }
+  </style>
+</head>
+<body>
+  <h1>Referral Network - Icon Generator</h1>
+  <div class="icons">
+    <div class="icon-group">
+      <canvas id="c16" width="16" height="16"></canvas>
+      <p>16x16</p>
+    </div>
+    <div class="icon-group">
+      <canvas id="c48" width="48" height="48"></canvas>
+      <p>48x48</p>
+    </div>
+    <div class="icon-group">
+      <canvas id="c128" width="128" height="128"></canvas>
+      <p>128x128</p>
+    </div>
+  </div>
+  <button onclick="downloadAll()">Download All Icons</button>
+  <div class="instructions">
+    <p><strong>Instructions:</strong></p>
+    <ol>
+      <li>Open this file in a browser</li>
+      <li>Click "Download All Icons" to save the PNG files</li>
+      <li>Move the downloaded files to <code>assets/icons/</code> in the extension folder</li>
+    </ol>
+  </div>
+
+  <script>
+    const sizes = [16, 48, 128];
+
+    function drawIcon(canvas) {
+      const size = canvas.width;
+      const ctx = canvas.getContext("2d");
+
+      // Background circle
+      ctx.fillStyle = "#1DA1F2";
+      ctx.beginPath();
+      ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Letter R
+      ctx.fillStyle = "#FFFFFF";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      const fontSize = Math.round(size * 0.6);
+      ctx.font = `bold ${fontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
+      ctx.fillText("R", size / 2, size / 2 + (size < 32 ? 0 : 1));
+    }
+
+    sizes.forEach((s) => {
+      const canvas = document.getElementById("c" + s);
+      drawIcon(canvas);
+    });
+
+    function downloadAll() {
+      sizes.forEach((s) => {
+        const canvas = document.getElementById("c" + s);
+        const link = document.createElement("a");
+        link.download = `icon${s}.png`;
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+      });
+    }
+  </script>
+</body>
+</html>

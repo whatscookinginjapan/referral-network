@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=380">
+  <title>Referral Network</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <!-- Login Section -->
+  <section id="login-section" class="section">
+    <div class="login-container">
+      <div class="login-logo">
+        <svg viewBox="0 0 24 24" width="48" height="48" fill="#fff">
+          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+        </svg>
+      </div>
+      <h1 class="login-title">Referral Network</h1>
+      <p class="login-tagline">Share and discover referral codes from your X network</p>
+      <div class="login-form">
+        <button id="login-btn" class="btn btn-primary btn-full">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" style="margin-right:8px;">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+          </svg>
+          Sign in with X
+        </button>
+        <p id="login-status" class="login-status" style="display:none;"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Consent Section -->
+  <section id="consent-section" class="section hidden">
+    <div class="consent-container">
+      <div class="consent-icon">
+        <svg viewBox="0 0 24 24" width="40" height="40" fill="#1DA1F2">
+          <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
+        </svg>
+      </div>
+      <h2 class="consent-title">Before you start</h2>
+      <p class="consent-subtitle">Please review and agree to continue</p>
+      <div class="consent-items">
+        <label class="consent-check">
+          <input type="checkbox" id="consent-share">
+          <span>I agree to <strong>share my referral codes</strong> with others in my X network who use Referral Network</span>
+        </label>
+        <label class="consent-check">
+          <input type="checkbox" id="consent-receive">
+          <span>I agree to <strong>receive referral offers</strong> from people in my X network</span>
+        </label>
+        <label class="consent-check">
+          <input type="checkbox" id="consent-terms">
+          <span>I agree to the <a href="https://whatscookinginjapan.github.io/referral-network/terms.html" target="_blank">Terms of Service</a> and <a href="https://whatscookinginjapan.github.io/referral-network/privacy.html" target="_blank">Privacy Policy</a></span>
+        </label>
+      </div>
+      <button id="consent-btn" class="btn btn-primary btn-full" disabled>Agree & Continue</button>
+    </div>
+  </section>
+
+  <!-- Main Section -->
+  <section id="main-section" class="section hidden">
+    <div class="header">
+      <div class="header-info">
+        <h2 id="site-name" class="site-name">Site Name</h2>
+        <span id="category-badge" class="badge">category</span>
+      </div>
+      <button id="add-code-btn" class="btn btn-small btn-primary">+ Add Code</button>
+    </div>
+
+    <div id="not-on-site" class="not-on-site hidden">
+      <div class="not-on-site-icon">
+        <svg viewBox="0 0 24 24" width="48" height="48" fill="#536471">
+          <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/>
+        </svg>
+      </div>
+      <h3>No referral codes on this site</h3>
+      <p>This site isn't in our supported list yet. Browse a supported site or suggest this one!</p>
+      <div id="supported-categories" class="supported-categories"></div>
+      <div class="suggest-site-cta">
+        <p class="suggest-text">Don't see your site?</p>
+        <button id="suggest-site-btn" class="btn btn-small btn-outline">Suggest a Site</button>
+      </div>
+    </div>
+
+    <div id="codes-filter-bar" class="codes-filter-bar hidden">
+      <input type="text" id="codes-search" class="input-field" placeholder="Search codes, products, users...">
+      <div id="product-type-filters" class="product-type-filters"></div>
+    </div>
+
+    <div id="codes-list" class="codes-list"></div>
+
+    <div id="empty-state" class="empty-state hidden">
+      <p>No referral codes yet for this site.</p>
+      <p class="subtle">Be the first to share yours!</p>
+    </div>
+
+    <div id="loading" class="loading hidden">
+      <div class="spinner"></div>
+    </div>
+  </section>
+
+  <!-- Add Referral Form -->
+  <section id="add-section" class="section hidden">
+    <div class="form-header">
+      <button id="back-from-add" class="btn-icon">&larr;</button>
+      <h2>Add Your Referral Code</h2>
+    </div>
+    <form id="add-form" class="form">
+      <div class="form-group">
+        <label for="referral-product-type">Product / Card Type (optional)</label>
+        <input type="text" id="referral-product-type" class="input-field" placeholder="e.g., Sapphire Preferred, IHG, Business Ink" maxlength="100">
+      </div>
+      <div class="form-group">
+        <label for="referral-code">Referral Code *</label>
+        <input type="text" id="referral-code" class="input-field" placeholder="Enter your referral code or link" required>
+      </div>
+      <div class="form-group">
+        <label for="referral-description">Description (optional)</label>
+        <textarea id="referral-description" class="input-field textarea" placeholder="e.g., Get $200 bonus when you open a new account" rows="3"></textarea>
+      </div>
+      <button type="submit" id="submit-code-btn" class="btn btn-primary btn-full">Submit Code</button>
+    </form>
+  </section>
+
+  <!-- Suggest Site Section -->
+  <section id="suggest-section" class="section hidden">
+    <div class="form-header">
+      <button id="back-from-suggest" class="btn-icon">&larr;</button>
+      <h2>Suggest a Site</h2>
+    </div>
+    <form id="suggest-form" class="form">
+      <div class="form-group">
+        <label for="suggest-url">Site URL or Domain *</label>
+        <input type="text" id="suggest-url" class="input-field" placeholder="e.g., example.com or https://example.com" required>
+      </div>
+      <div class="form-group">
+        <label for="suggest-name">Site Name (optional)</label>
+        <input type="text" id="suggest-name" class="input-field" placeholder="e.g., Example Service">
+      </div>
+      <div class="form-group">
+        <label for="suggest-category">Category (optional)</label>
+        <select id="suggest-category" class="input-field">
+          <option value="">Select a category</option>
+          <option value="credit_cards">Credit Cards</option>
+          <option value="banks">Banks</option>
+          <option value="shopping">Shopping</option>
+          <option value="travel">Travel</option>
+          <option value="food_delivery">Food Delivery</option>
+          <option value="crypto">Crypto</option>
+          <option value="subscriptions">Subscriptions</option>
+          <option value="fintech">Fintech</option>
+          <option value="investing">Investing</option>
+          <option value="insurance">Insurance</option>
+          <option value="health_fitness">Health & Fitness</option>
+          <option value="education">Education</option>
+          <option value="vpn_security">VPN & Security</option>
+          <option value="telecom">Telecom</option>
+          <option value="cloud_tech">Cloud & Tech</option>
+          <option value="energy_auto">Energy & Auto</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="suggest-description">Why should we add this site? (optional)</label>
+        <textarea id="suggest-description" class="input-field textarea" placeholder="e.g., They have a referral program that gives both users $20" rows="3"></textarea>
+      </div>
+      <button type="submit" id="suggest-submit-btn" class="btn btn-primary btn-full">Submit Suggestion</button>
+    </form>
+  </section>
+
+  <!-- Network Section -->
+  <section id="network-section" class="section hidden">
+    <div class="network-header">
+      <h2>Your Network</h2>
+      <p id="network-stats" class="network-stats"></p>
+    </div>
+    <div class="network-add">
+      <div class="network-add-form">
+        <input type="text" id="add-username-input" class="input-field" placeholder="Add by @username">
+        <button id="add-username-btn" class="btn btn-small btn-primary">Add</button>
+      </div>
+      <p id="add-username-error" class="add-username-msg hidden"></p>
+      <p id="add-username-success" class="add-username-msg success hidden"></p>
+      <div class="import-actions">
+        <button id="bulk-import-btn" class="btn btn-small btn-primary">Bulk Import</button>
+        <button id="view-imported-btn" class="btn btn-small btn-outline hidden">Manage Imports</button>
+      </div>
+    </div>
+
+    <!-- Bulk Import Panel (hidden by default) -->
+    <div id="import-panel" class="import-panel hidden">
+      <div class="form-header">
+        <button id="back-from-import" class="btn-icon">&larr;</button>
+        <h2>Import Following List</h2>
+      </div>
+      <div class="form" style="padding-bottom:8px;">
+        <div class="form-group">
+          <label>Paste @usernames (one per line or comma-separated)</label>
+          <textarea id="import-textarea" class="input-field textarea" rows="5" placeholder="@user1&#10;@user2&#10;@user3&#10;&#10;or: user1, user2, user3"></textarea>
+        </div>
+        <div class="form-group">
+          <label>These people are...</label>
+          <select id="import-source-select" class="input-field">
+            <option value="following">People I follow</option>
+            <option value="followers">My followers</option>
+            <option value="manual">Just adding to track</option>
+          </select>
+        </div>
+        <div class="import-divider"><span>or</span></div>
+        <div class="form-group">
+          <label>Upload X archive files</label>
+          <p style="font-size:11px;color:#71767b;margin-bottom:6px;">Upload <b>following.js</b> and/or <b>follower.js</b> from your X data archive (Settings → Your Account → Download an archive)</p>
+          <input type="file" id="import-file" accept=".js,.json" multiple class="input-field" style="padding:8px;">
+        </div>
+        <button id="import-submit-btn" class="btn btn-primary btn-full">Import</button>
+        <p id="import-result" class="import-result hidden"></p>
+      </div>
+    </div>
+
+    <!-- Imported Users / Invite Panel (hidden by default) -->
+    <div id="imported-panel" class="imported-panel hidden">
+      <div class="form-header">
+        <button id="back-from-imported" class="btn-icon">&larr;</button>
+        <h2>Manage Imported Follows</h2>
+      </div>
+      <p id="imported-stats" class="network-stats" style="padding:12px 16px;"></p>
+      <div class="search-bar">
+        <input type="text" id="imported-search" class="input-field" placeholder="Search imported users...">
+      </div>
+      <h3 class="section-title" id="on-platform-title" style="display:none;">On Platform</h3>
+      <div id="imported-on-platform" class="codes-list"></div>
+      <h3 class="section-title" id="not-on-platform-title" style="display:none;">Not on Platform</h3>
+      <div id="imported-not-on-platform" class="codes-list"></div>
+    </div>
+
+    <div class="search-bar">
+      <input type="text" id="network-search" class="input-field" placeholder="Search network...">
+    </div>
+    <h3 id="my-network-title" class="section-title hidden">My Connections</h3>
+    <div id="network-list" class="codes-list"></div>
+    <h3 id="discover-title" class="section-title hidden">Discover Users</h3>
+    <div id="discover-list" class="codes-list"></div>
+    <div id="network-empty" class="empty-state hidden">
+      <p>No one is on Referral Network yet.</p>
+      <p class="subtle">Import your follows or add friends by @username!</p>
+    </div>
+    <div id="network-loading" class="loading hidden">
+      <div class="spinner"></div>
+    </div>
+  </section>
+
+  <!-- Profile Section -->
+  <section id="profile-section" class="section hidden">
+    <div class="profile-header">
+      <div class="profile-avatar" id="profile-avatar">?</div>
+      <div class="profile-info">
+        <h2 id="profile-name">Display Name</h2>
+        <p id="profile-handle" class="handle">@username</p>
+      </div>
+      <button id="logout-btn" class="btn btn-small btn-outline">Sign Out</button>
+    </div>
+    <h3 class="section-title">Your Referral Codes</h3>
+    <div id="profile-codes" class="codes-list"></div>
+    <div id="profile-empty" class="empty-state hidden">
+      <p>You haven't shared any referral codes yet.</p>
+    </div>
+    <h3 class="section-title">My Site Suggestions</h3>
+    <div id="profile-suggestions" class="codes-list"></div>
+    <div id="suggestions-empty" class="empty-state hidden">
+      <p>You haven't suggested any sites yet.</p>
+    </div>
+  </section>
+
+  <!-- Bottom Navigation -->
+  <nav id="bottom-nav" class="bottom-nav hidden">
+    <button class="nav-tab active" data-tab="codes">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+        <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+      </svg>
+      <span>Codes</span>
+    </button>
+    <button class="nav-tab" data-tab="network">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+        <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+      </svg>
+      <span>Network</span>
+    </button>
+    <button class="nav-tab" data-tab="profile">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+      </svg>
+      <span>Profile</span>
+    </button>
+  </nav>
+
+  <script src="popup.js"></script>
+</body>
+</html>

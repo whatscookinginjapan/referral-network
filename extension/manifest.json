@@ -1,0 +1,95 @@
+{
+  "manifest_version": 3,
+  "name": "Referral Network",
+  "description": "Share and discover referral codes from your X network",
+  "version": "1.0.0",
+  "permissions": ["activeTab", "storage", "tabs"],
+  "host_permissions": ["http://localhost:3000/*", "https://referral-network-production.up.railway.app/*"],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'none';"
+  },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "assets/icons/icon16.png",
+      "48": "assets/icons/icon48.png",
+      "128": "assets/icons/icon128.png"
+    }
+  },
+  "background": {
+    "service_worker": "background/service-worker.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.chase.com/*",
+        "*://*.americanexpress.com/*",
+        "*://*.capitalone.com/*",
+        "*://*.discover.com/*",
+        "*://*.citi.com/*",
+        "*://*.marcus.com/*",
+        "*://*.sofi.com/*",
+        "*://*.ally.com/*",
+        "*://*.chime.com/*",
+        "*://*.amazon.com/*",
+        "*://*.rakuten.com/*",
+        "*://*.honey.com/*",
+        "*://*.target.com/*",
+        "*://*.airbnb.com/*",
+        "*://*.uber.com/*",
+        "*://*.lyft.com/*",
+        "*://*.hotels.com/*",
+        "*://*.doordash.com/*",
+        "*://*.ubereats.com/*",
+        "*://*.grubhub.com/*",
+        "*://*.instacart.com/*",
+        "*://*.coinbase.com/*",
+        "*://*.robinhood.com/*",
+        "*://*.webull.com/*",
+        "*://*.spotify.com/*",
+        "*://*.netflix.com/*",
+        "*://*.youtube.com/*",
+        "*://*.fetchrewards.com/*",
+        "*://*.ibotta.com/*",
+        "*://*.turo.com/*",
+        "*://*.getaround.com/*",
+        "*://*.cash.app/*",
+        "*://*.venmo.com/*",
+        "*://*.paypal.com/*",
+        "*://*.wealthfront.com/*",
+        "*://*.betterment.com/*",
+        "*://*.acorns.com/*",
+        "*://*.m1finance.com/*",
+        "*://*.public.com/*",
+        "*://*.lemonade.com/*",
+        "*://*.rootinsurance.com/*",
+        "*://*.onepeloton.com/*",
+        "*://*.classpass.com/*",
+        "*://*.tonal.com/*",
+        "*://*.skillshare.com/*",
+        "*://*.masterclass.com/*",
+        "*://*.audible.com/*",
+        "*://*.nordvpn.com/*",
+        "*://*.expressvpn.com/*",
+        "*://*.surfshark.com/*",
+        "*://*.t-mobile.com/*",
+        "*://*.mintmobile.com/*",
+        "*://*.visible.com/*",
+        "*://*.fi.google.com/*",
+        "*://*.usmobile.com/*",
+        "*://*.digitalocean.com/*",
+        "*://*.dropbox.com/*",
+        "*://*.notion.so/*",
+        "*://*.tesla.com/*",
+        "*://*.arcadia.com/*"
+      ],
+      "js": ["content/content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "icons": {
+    "16": "assets/icons/icon16.png",
+    "48": "assets/icons/icon48.png",
+    "128": "assets/icons/icon128.png"
+  }
+}
