@@ -105,7 +105,7 @@ router.get('/callback', async (req, res) => {
     return res.redirect(`${baseUrl}/api/auth/success?code=${exchangeCode}`);
 
   } catch (err) {
-    console.error('OAuth callback error:', err);
+    console.error('OAuth callback error:', err.message, err.stack);
     logAudit('login_failed', { ip: getIp(req), details: { error: err.message }, severity: 'warning' });
     return res.send(callbackHTML('error', 'Authentication failed. Please try again.'));
   }
