@@ -59,6 +59,9 @@ router.get('/callback', async (req, res) => {
 
     const db = getDb();
 
+    // Debug: log env key presence
+    console.log('ENCRYPTION_KEY set:', !!process.env.ENCRYPTION_KEY, 'length:', (process.env.ENCRYPTION_KEY||'').length);
+
     // Find or create user
     let user = await db.prepare('SELECT * FROM users WHERE x_id = ?').get(profile.x_id);
 

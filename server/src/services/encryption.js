@@ -3,7 +3,7 @@ const crypto = require('crypto');
 const ALGORITHM = 'aes-256-gcm';
 
 function getKey() {
-  const key = process.env.ENCRYPTION_KEY;
+  const key = process.env.ENCRYPTION_KEY || process.env.JWT_SECRET;
   if (!key) {
     throw new Error('ENCRYPTION_KEY environment variable is required');
   }
