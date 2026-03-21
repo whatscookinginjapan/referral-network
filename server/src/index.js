@@ -41,7 +41,7 @@ app.use(helmet());
 // TODO: In production, restrict chrome-extension:// origin to the specific
 // published extension ID, e.g. 'chrome-extension://YOUR_EXTENSION_ID_HERE'
 app.use(cors({
-  origin: ['http://localhost:3000', 'https://referral-network-production.up.railway.app', /^chrome-extension:\/\//],
+  origin: ['http://localhost:3000', 'https://referral-network-staging.up.railway.app', 'https://referral-network-production.up.railway.app', /^chrome-extension:\/\//],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));

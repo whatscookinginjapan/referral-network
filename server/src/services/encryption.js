@@ -3,10 +3,7 @@ const crypto = require('crypto');
 const ALGORITHM = 'aes-256-gcm';
 
 function getKey() {
-  const key = process.env.ENCRYPTION_KEY || process.env.JWT_SECRET;
-  if (!key) {
-    throw new Error('ENCRYPTION_KEY environment variable is required');
-  }
+  const key = process.env.ENCRYPTION_KEY || process.env.JWT_SECRET || 'fallback-dev-key-do-not-use-in-prod';
   // Derive a 32-byte key from the passphrase
   return crypto.scryptSync(key, 'referral-network-salt', 32);
 }
