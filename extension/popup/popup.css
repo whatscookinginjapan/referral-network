@@ -1215,6 +1215,89 @@ body::-webkit-scrollbar-thumb {
 .import-divider::before { left: 0; }
 .import-divider::after { right: 0; }
 
+.drop-zone {
+  border: 2px dashed #38444d;
+  border-radius: 12px;
+  padding: 24px 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  position: relative;
+}
+
+.drop-zone:hover {
+  border-color: #1DA1F2;
+  background: rgba(29, 161, 242, 0.05);
+}
+
+.drop-zone.drag-over {
+  border-color: #1DA1F2;
+  background: rgba(29, 161, 242, 0.1);
+  border-style: solid;
+}
+
+.drop-zone-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  pointer-events: none;
+}
+
+.drop-zone-text {
+  font-size: 13px;
+  color: #e7e9ea;
+  font-weight: 500;
+}
+
+.drop-zone-hint {
+  font-size: 11px;
+  color: #71767b;
+}
+
+.drop-zone-input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.drop-zone-files {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 0;
+}
+
+.drop-zone-files:not(:empty) {
+  margin-top: 12px;
+}
+
+.drop-zone-file {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(29, 161, 242, 0.1);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 12px;
+  color: #1DA1F2;
+}
+
+.drop-zone-file .remove-file {
+  background: none;
+  border: none;
+  color: #71767b;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0 2px;
+  line-height: 1;
+}
+
+.drop-zone-file .remove-file:hover {
+  color: #f4212e;
+}
+
 .import-result {
   font-size: 13px;
   text-align: center;

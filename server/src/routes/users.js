@@ -25,9 +25,11 @@ router.post('/me/consent', authMiddleware, async (req, res) => {
 router.get('/me/referrals', authMiddleware, async (req, res) => {
   try {
     const db = getDb();
+    const limit = Math.min(parseInt(req.query.limit) || 50, 100);
+    const offset = parseInt(req.query.offset) || 0;
     const referrals = await db.prepare(
-      'SELECT * FROM referral_codes WHERE user_id = ? ORDER BY created_at DESC'
-    ).all(req.user.id);
+      'SELECT * FROM referral_codes WHERE user_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?'
+    ).all(req.user.id, limit, offset);
     return res.json({ referrals });
   } catch (err) {
     console.error('Get user referrals error:', err);

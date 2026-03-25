@@ -2,6 +2,7 @@ const express = require('express');
 const { v4: uuidv4 } = require('uuid');
 const { getDb } = require('../db/database');
 const authMiddleware = require('../middleware/auth');
+const { adminMiddleware } = require('../middleware/auth');
 const { logAudit, getIp } = require('../services/auditLog');
 
 const router = express.Router();
@@ -80,8 +81,8 @@ router.post('/track', authMiddleware, async (req, res) => {
   }
 });
 
-// GET /api/affiliates/stats — affiliate performance stats (for internal dashboard)
-router.get('/stats', authMiddleware, async (req, res) => {
+// GET /api/affiliates/stats — affiliate performance stats (admin only)
+router.get('/stats', authMiddleware, adminMiddleware, async (req, res) => {
   try {
     const db = getDb();
 
@@ -91,6 +92,7 @@ router.get('/stats', authMiddleware, async (req, res) => {
       FROM affiliate_clicks
       GROUP BY site_domain, action
       ORDER BY count DESC
+      LIMIT 100
     `).all();
 
     // Clicks today
@@ -122,8 +124,8 @@ router.get('/stats', authMiddleware, async (req, res) => {
   }
 });
 
-// POST /api/affiliates/links — add a new affiliate link (admin)
-router.post('/links', authMiddleware, async (req, res) => {
+// POST /api/affiliates/links — add a new affiliate link (admin only)
+router.post('/links', authMiddleware, adminMiddleware, async (req, res) => {
   try {
     const db = getDb();
     const { site_domain, site_name, category, network, affiliate_url, commission_type, commission_value, cookie_days } = req.body;
@@ -157,9 +159,11 @@ router.post('/links', authMiddleware, async (req, res) => {
 router.get('/links', authMiddleware, async (req, res) => {
   try {
     const db = getDb();
+    const limit = Math.min(parseInt(req.query.limit) || 50, 100);
+    const offset = parseInt(req.query.offset) || 0;
     const links = await db.prepare(
-      'SELECT * FROM affiliate_links ORDER BY is_active DESC, site_domain ASC'
-    ).all();
+      'SELECT * FROM affiliate_links ORDER BY is_active DESC, site_domain ASC LIMIT ? OFFSET ?'
+    ).all(limit, offset);
     return res.json({ links });
   } catch (err) {
     console.error('List affiliate links error:', err);
@@ -167,8 +171,8 @@ router.get('/links', authMiddleware, async (req, res) => {
   }
 });
 
-// DELETE /api/affiliates/links/:id — deactivate an affiliate link
-router.delete('/links/:id', authMiddleware, async (req, res) => {
+// DELETE /api/affiliates/links/:id — deactivate an affiliate link (admin only)
+router.delete('/links/:id', authMiddleware, adminMiddleware, async (req, res) => {
   try {
     const db = getDb();
     await db.prepare('UPDATE affiliate_links SET is_active = 0 WHERE id = ?').run(req.params.id);

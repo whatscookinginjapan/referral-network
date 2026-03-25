@@ -1047,8 +1047,66 @@ const backFromImport = document.getElementById("back-from-import");
 const backFromImported = document.getElementById("back-from-imported");
 const importTextarea = document.getElementById("import-textarea");
 const importFile = document.getElementById("import-file");
+const dropZone = document.getElementById("drop-zone");
+const dropZoneFiles = document.getElementById("drop-zone-files");
 const importSubmitBtn = document.getElementById("import-submit-btn");
 const importResult = document.getElementById("import-result");
+
+// Drag & drop file handling
+let droppedFiles = new DataTransfer();
+
+dropZone.addEventListener("dragover", (e) => {
+  e.preventDefault();
+  dropZone.classList.add("drag-over");
+});
+
+dropZone.addEventListener("dragleave", () => {
+  dropZone.classList.remove("drag-over");
+});
+
+dropZone.addEventListener("drop", (e) => {
+  e.preventDefault();
+  dropZone.classList.remove("drag-over");
+  for (const file of e.dataTransfer.files) {
+    if (file.name.endsWith(".js") || file.name.endsWith(".json")) {
+      droppedFiles.items.add(file);
+    }
+  }
+  importFile.files = droppedFiles.files;
+  renderDropZoneFiles();
+});
+
+importFile.addEventListener("change", () => {
+  droppedFiles = new DataTransfer();
+  for (const file of importFile.files) {
+    droppedFiles.items.add(file);
+  }
+  renderDropZoneFiles();
+});
+
+function renderDropZoneFiles() {
+  dropZoneFiles.innerHTML = "";
+  for (let i = 0; i < droppedFiles.files.length; i++) {
+    const file = droppedFiles.files[i];
+    const el = document.createElement("div");
+    el.className = "drop-zone-file";
+    el.innerHTML = `<span>${file.name}</span><button class="remove-file" data-idx="${i}">&times;</button>`;
+    dropZoneFiles.appendChild(el);
+  }
+  dropZoneFiles.querySelectorAll(".remove-file").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const idx = parseInt(btn.dataset.idx);
+      const newDt = new DataTransfer();
+      for (let i = 0; i < droppedFiles.files.length; i++) {
+        if (i !== idx) newDt.items.add(droppedFiles.files[i]);
+      }
+      droppedFiles = newDt;
+      importFile.files = droppedFiles.files;
+      renderDropZoneFiles();
+    });
+  });
+}
 
 bulkImportBtn.addEventListener("click", () => {
   importPanel.classList.remove("hidden");
@@ -1178,6 +1236,8 @@ importSubmitBtn.addEventListener("click", async () => {
     importResult.classList.remove("hidden");
     importTextarea.value = "";
     importFile.value = "";
+    droppedFiles = new DataTransfer();
+    dropZoneFiles.innerHTML = "";
 
     // Show the manage button
     viewImportedBtn.classList.remove("hidden");

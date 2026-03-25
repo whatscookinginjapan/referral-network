@@ -23,4 +23,14 @@ function authMiddleware(req, res, next) {
   }
 }
 
+const ADMIN_IDS = (process.env.ADMIN_USER_IDS || '').split(',').filter(Boolean);
+
+function adminMiddleware(req, res, next) {
+  if (!ADMIN_IDS.includes(req.user.id)) {
+    return res.status(403).json({ error: 'Admin access required' });
+  }
+  next();
+}
+
 module.exports = authMiddleware;
+module.exports.adminMiddleware = adminMiddleware;

@@ -209,7 +209,19 @@
         <div class="form-group">
           <label>Upload X archive files</label>
           <p style="font-size:11px;color:#71767b;margin-bottom:6px;">Upload <b>following.js</b> and/or <b>follower.js</b> from your X data archive (Settings → Your Account → Download an archive)</p>
-          <input type="file" id="import-file" accept=".js,.json" multiple class="input-field" style="padding:8px;">
+          <div id="drop-zone" class="drop-zone">
+            <div class="drop-zone-content">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#71767b" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+              <p class="drop-zone-text">Drag & drop files here</p>
+              <p class="drop-zone-hint">or click to browse</p>
+            </div>
+            <div id="drop-zone-files" class="drop-zone-files"></div>
+            <input type="file" id="import-file" accept=".js,.json" multiple class="drop-zone-input">
+          </div>
         </div>
         <button id="import-submit-btn" class="btn btn-primary btn-full">Import</button>
         <p id="import-result" class="import-result hidden"></p>

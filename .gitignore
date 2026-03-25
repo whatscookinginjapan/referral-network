@@ -29,3 +29,7 @@ build/
 # IDE
 .vscode/
 .idea/
+node_modules
+*.zip
+.env
+referral.db

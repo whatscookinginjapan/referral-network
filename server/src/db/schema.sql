@@ -129,6 +129,15 @@ CREATE TABLE IF NOT EXISTS x_relationships (
 
 CREATE INDEX IF NOT EXISTS idx_x_relationships_user ON x_relationships(user_id);
 
+CREATE INDEX IF NOT EXISTS idx_referral_codes_user ON referral_codes(user_id);
+CREATE INDEX IF NOT EXISTS idx_referral_codes_domain ON referral_codes(site_domain);
+CREATE INDEX IF NOT EXISTS idx_follows_follower ON follows(follower_id);
+CREATE INDEX IF NOT EXISTS idx_follows_following ON follows(following_id);
+CREATE INDEX IF NOT EXISTS idx_imported_follows_user ON imported_follows(user_id);
+CREATE INDEX IF NOT EXISTS idx_reports_referral ON reports(referral_id);
+CREATE INDEX IF NOT EXISTS idx_audit_logs_user ON audit_logs(user_id);
+CREATE INDEX IF NOT EXISTS idx_audit_logs_action ON audit_logs(action);
+
 CREATE TABLE IF NOT EXISTS oauth_states (
   state TEXT PRIMARY KEY,
   code_verifier TEXT NOT NULL,

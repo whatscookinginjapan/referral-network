@@ -1,4 +1,4 @@
-const API_BASE = "https://referral-network-staging.up.railway.app/api";
+const API_BASE = "https://referral-network-production.up.railway.app/api";
 
 // Listen for messages from content scripts and popup
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
